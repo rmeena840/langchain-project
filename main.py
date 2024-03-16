@@ -1,5 +1,6 @@
 import os
 
+from langchain.agents import load_tools, initialize_agent, AgentType
 from langchain.chains.llm import LLMChain
 from langchain.chains.sequential import SimpleSequentialChain, SequentialChain
 from langchain_core.tracers import langchain
@@ -73,3 +74,14 @@ menu_list_chain_seq = LLMChain(llm=llm, prompt=menu_list_prompt, output_key="men
 
 chain_seq = SequentialChain(chains=[restaurant_name_chain, menu_list_chain], input_variable=['cuisine'], output_variable=['restaurant_name', 'menu_items'])
 chain_seq({"cuisine": "Indian"})
+
+# agents
+tools = load_tools(["wikipedia", "llm-math"], llm=llm)
+
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION
+)
+
+agent.run("What was the GDP of India in 2023?")
