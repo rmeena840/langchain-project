@@ -1,7 +1,10 @@
+# this file is only for trying out the main components of langchain. Please check the real
+# life project in the same project.
 import os
 
 from langchain.agents import load_tools, initialize_agent, AgentType
 from langchain.chains.llm import LLMChain
+from langchain.chains import ConversationChain
 from langchain.chains.sequential import SimpleSequentialChain, SequentialChain
 from langchain_core.tracers import langchain
 from langchain_openai import OpenAI
@@ -10,6 +13,7 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain.cache import InMemoryCache
 from langchain.prompts import PromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate
+from langchain.memory import ConversationBufferMemory
 
 os.environ["OPENAI_API_KEY"] = "sk-"
 
@@ -85,3 +89,20 @@ agent = initialize_agent(
 )
 
 agent.run("What was the GDP of India in 2023?")
+
+# memory
+memory = ConversationBufferMemory()
+memory_chain = LLMChain(llm=llm, prompt=menu_list_prompt_seq, memory=memory)
+
+# conversation chain
+convo = ConversationChain(llm=llm)
+convo.run("Who is elon musk?")
+convo.run("Who is bill gates?")
+convo.run("Where will next FIFA will happen?")
+convo.run("Who is the father of computer?")
+
+# print the convo chai buffer
+print(convo.memory.buffer)
+
+# the cost is high in retaining the memory. please use ConversationWindowBufferMemory
+
